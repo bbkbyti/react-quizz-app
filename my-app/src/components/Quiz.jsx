@@ -1,13 +1,13 @@
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback } from 'react'
 
 import QUESTIONS from '../questions.js'
-import QuestionTimer from './QuestionTimer.jsx';
+import Question from './Question.jsx'
 
 //task: As the user picks an answer first highlight that answer and then after a second the color of the answer
 // changes to green if it was the correct answer and red if it wasn't
 
 export default function Quiz() {
-    const shuffledAnswers = useRef();
+
     const [userAns, setUserAns] = useState([]);
     const [answerState, setAnswerState] = useState('')
 
@@ -46,48 +46,18 @@ export default function Quiz() {
         )
     }
 
-    if (!shuffledAnswers.current) {
-        shuffledAnswers.current = [...QUESTIONS[activeQuestionIndex].answers];
-        shuffledAnswers.current.sort(() => Math.random() - 0.5);
-    }
-
-
-
-
-
 
     return (
         <div id='quiz'>
             <div id='question'>
-                <QuestionTimer
-                    key={activeQuestionIndex}
-                    timeout={10000}
-                    onTimeout={handleSkipAnswer}
+                <Question
+                    questionText={QUESTIONS[activeQuestionIndex].text}
+                    answers={QUESTIONS[activeQuestionIndex].answers}
+                    onSelectAnswer={handleSelectAnswer}
+                    answerState={answerState}
+                    selectedAnswer={userAns[userAns.length - 1]}
+                    onSkipAnswer={handleSkipAnswer}
                 />
-                <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
-                <ul id="answers">
-                    {shuffledAnswers.current.map((answer) => {
-
-                        const isSelected = userAns[userAns.length - 1] === answer;
-                        let cssClass = '';
-
-                        if (answerState === 'answered' && isSelected) {
-                            cssClass = 'selected';
-                        }
-
-                        if ((answerState === 'correct' || answerState === 'wrong') && isSelected) {
-                            cssClass = answerState;
-                        }
-                        return <li key={answer} className="answer">
-                            <button onClick={() => handleSelectAnswer(answer)}
-                                className={cssClass}
-                            >
-                                {answer}</button>
-                        </li>
-                    }
-
-                    )}
-                </ul>
             </div>
         </div>
     )
